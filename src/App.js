@@ -2,22 +2,40 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
+
+  const [user, setUser] = useState(null);
+
+  const getUser = async () => {
+    try {
+      const url = `${process.env.REACT_APP_API_URL}/auth/login/success`;
+      const { data } = await axios.get(url, { withCredentials: true });
+      setUser(data.user._json);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    getUser();
+  }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {user ? (
+        <>
+          {/* <DataPage/> */}
+          {/* <NavBar user={user} setUser={setUser}/> */}
+          <Routes>
+            <Route path="/catfact" element={<Home user={user} />} />
+            <Route path="/*" element={<Navigate to="/catfact" />} />
+          </Routes>
+        </>
+      ) : (
+        <>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/*" element={<Navigate to="/" />} />
+          </Routes>
+        </>
+      )}
     </div>
   );
 }
